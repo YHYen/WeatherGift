@@ -13,6 +13,7 @@
 		2CCBCEC529DBEDDE00638D45 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CCBCEC329DBEDDE00638D45 /* Main.storyboard */; };
 		2CCBCEC729DBEDDF00638D45 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2CCBCEC629DBEDDF00638D45 /* Assets.xcassets */; };
 		2CCBCECA29DBEDDF00638D45 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CCBCEC829DBEDDF00638D45 /* LaunchScreen.storyboard */; };
+		2CCBCED229DBEE0600638D45 /* WeatherLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCBCED129DBEE0600638D45 /* WeatherLocation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		2CCBCEC629DBEDDF00638D45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2CCBCEC929DBEDDF00638D45 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2CCBCECB29DBEDDF00638D45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2CCBCED129DBEE0600638D45 /* WeatherLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherLocation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 			children = (
 				2CCBCEBD29DBEDDE00638D45 /* AppDelegate.swift */,
 				2CCBCEBF29DBEDDE00638D45 /* SceneDelegate.swift */,
+				2CCBCED129DBEE0600638D45 /* WeatherLocation.swift */,
 				2CCBCEC129DBEDDE00638D45 /* ViewController.swift */,
 				2CCBCEC329DBEDDE00638D45 /* Main.storyboard */,
 				2CCBCEC629DBEDDF00638D45 /* Assets.xcassets */,
@@ -139,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2CCBCEC229DBEDDE00638D45 /* ViewController.swift in Sources */,
+				2CCBCED229DBEE0600638D45 /* WeatherLocation.swift in Sources */,
 				2CCBCEBE29DBEDDE00638D45 /* AppDelegate.swift in Sources */,
 				2CCBCEC029DBEDDE00638D45 /* SceneDelegate.swift in Sources */,
 			);
