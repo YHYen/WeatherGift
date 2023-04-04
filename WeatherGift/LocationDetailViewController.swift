@@ -17,17 +17,34 @@ class LocationDetailViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     
     var weatherLocation: WeatherLocation!
-    var weatherLocations = WeatherLocations()
+    var weatherLocations: [WeatherLocation] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if weatherLocation == nil {
             weatherLocation = WeatherLocation(name: "Current Location", latitude: 0.0, longitude: 0.0)
-            weatherLocations.weatherLocationArray.append(weatherLocation)
+            weatherLocations.append(weatherLocation)
         }
-
+        
+        loadLocations()
         updateUserInterface()
+    }
+    
+    
+    func loadLocations() {
+        guard let data = UserDefaults.standard.value(forKey: "weatherLocations") as? Data else {
+            print("⚠️ Warning: Couldn't load weatherLocations data from UserDefaults. This would always be the case the first time an app is installed, so if that's the case, ignore this error.")
+            return
+        }
+        
+        let jsonDecoder = JSONDecoder()
+        
+        if let weatherLocations = try? jsonDecoder.decode(Array.self, from: data) as [WeatherLocation] {
+            self.weatherLocations = weatherLocations
+        } else {
+            print("😡 ERROR: Couldn't decode data read from UserDefaults.")
+        }
     }
     
     
@@ -49,7 +66,7 @@ class LocationDetailViewController: UIViewController {
     @IBAction func unwindFromLocationListViewController(segue: UIStoryboardSegue) {
         let source = segue.source as! LocationListViewController
         weatherLocations = source.weatherLocations
-        weatherLocation = weatherLocations.weatherLocationArray[source.selectedlocationIndex]
+        weatherLocation = weatherLocations[source.selectedlocationIndex]
         updateUserInterface()
     }
 

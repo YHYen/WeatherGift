@@ -14,7 +14,7 @@ class LocationListViewController: UIViewController {
     @IBOutlet weak var addLocationBarButton: UIBarButtonItem!
     @IBOutlet weak var editBarButton: UIBarButtonItem!
     
-    var weatherLocations = WeatherLocations()
+    var weatherLocations: [WeatherLocation] = []
     var selectedlocationIndex = 0
     
     override func viewDidLoad() {
@@ -30,8 +30,19 @@ class LocationListViewController: UIViewController {
     }
     
     
+    func saveLocation() {
+        let jsonEncoder = JSONEncoder()
+        if let data = try? jsonEncoder.encode(weatherLocations) {
+            UserDefaults.standard.set(data, forKey: "weatherLocations")
+        } else {
+            print("😡 ERROR: Saving encode didn't work!")
+        }
+    }
+    
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         selectedlocationIndex = tableView.indexPathForSelectedRow!.row
+        saveLocation()
     }
     
     
@@ -62,30 +73,30 @@ class LocationListViewController: UIViewController {
 extension LocationListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // return tableView rows number
-        return weatherLocations.weatherLocationArray.count
+        return weatherLocations.count
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = weatherLocations.weatherLocationArray[indexPath.row].name
-        cell.detailTextLabel?.text = "Lat:\(weatherLocations.weatherLocationArray[indexPath.row].latitude), Long:\(weatherLocations.weatherLocationArray[indexPath.row].longitude)"
+        cell.textLabel?.text = weatherLocations[indexPath.row].name
+        cell.detailTextLabel?.text = "Lat:\(weatherLocations[indexPath.row].latitude), Long:\(weatherLocations[indexPath.row].longitude)"
         return cell
     }
     
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            weatherLocations.weatherLocationArray.remove(at: indexPath.row)
+            weatherLocations.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
     
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let itemToMove = weatherLocations.weatherLocationArray[sourceIndexPath.row]
-        weatherLocations.weatherLocationArray.remove(at: sourceIndexPath.row)
-        weatherLocations.weatherLocationArray.insert(itemToMove, at: destinationIndexPath.row)
+        let itemToMove = weatherLocations[sourceIndexPath.row]
+        weatherLocations.remove(at: sourceIndexPath.row)
+        weatherLocations.insert(itemToMove, at: destinationIndexPath.row)
     }
 }
 
@@ -96,7 +107,7 @@ extension LocationListViewController: GMSAutocompleteViewControllerDelegate {
     func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
         
         let newLocation = WeatherLocation(name: place.name ?? "unknown place", latitude: place.coordinate.latitude, longitude: place.coordinate.longitude)
-        weatherLocations.weatherLocationArray.append(newLocation)
+        weatherLocations.append(newLocation)
         tableView.reloadData()
         dismiss(animated: true, completion: nil)
     }
