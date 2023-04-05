@@ -11,7 +11,7 @@ import Foundation
 private var dateFormatter: DateFormatter = {
     print("📆📆📆 I JUST CREATE A DATE FORMATTER in WeatherDetail.swift!")
     let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "hh:mm aaa"
+    dateFormatter.dateFormat = "EEEE h aaa"
     return dateFormatter
 }()
 
@@ -150,7 +150,7 @@ class WeatherDetail: WeatherLocation {
                     let time = Date(timeIntervalSince1970: forecastResult.list[index].dt)
                     dateFormatter.timeZone = TimeZone(secondsFromGMT: forecastResult.city.timezone)
                     let forecastTime = dateFormatter.string(from: time)
-                    let forecastWeather = ForecastWeather(forecastIcon: forecastIcon, forecastTime: "", forecastSummary: forecastSummary, forecastHigh: forecastHigh, forecastLow: forecastLow)
+                    let forecastWeather = ForecastWeather(forecastIcon: forecastIcon, forecastTime: forecastTime, forecastSummary: forecastSummary, forecastHigh: forecastHigh, forecastLow: forecastLow)
                     self.forecastWeatherData.append(forecastWeather)
                     print("Time: \(forecastTime), High: \(forecastHigh), Low: \(forecastLow)")
                 }
