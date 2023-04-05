@@ -7,6 +7,15 @@
 
 import UIKit
 
+
+private var dateFormatter: DateFormatter = {
+    print("📆 I JUST CREATE A DATE FORMATTER!")
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "EEEE, MMM d, h:mm aaa"
+    return dateFormatter
+}()
+
+
 class LocationDetailViewController: UIViewController {
 
     
@@ -38,14 +47,20 @@ class LocationDetailViewController: UIViewController {
         pageControl.numberOfPages = pageViewController.weatherLocations.count
         pageControl.currentPage = locationIndex
         
-        
-        weatherDetail.getData {
+        weatherDetail.getCurrentData {
             DispatchQueue.main.sync {
-                self.dateLabel.text = self.weatherDetail.name
+                dateFormatter.timeZone = TimeZone(secondsFromGMT: self.weatherDetail.timeZone)
+                let usableDate = Date(timeIntervalSince1970: self.weatherDetail.currentTime)
+                self.dateLabel.text = dateFormatter.string(from: usableDate)
                 self.placeLabel.text = self.weatherDetail.name
                 self.temperatureLabel.text = "\(self.weatherDetail.temperature)°C"
                 self.summaryLabel.text = self.weatherDetail.summary
+                self.imageView.image = UIImage(named: self.weatherDetail.dailyIcon)
             }
+        }
+        
+        weatherDetail.getForecastData {
+            
         }
     }
     
