@@ -16,12 +16,22 @@ private var dateFormatter: DateFormatter = {
 }()
 
 
+private var dateFormatterForNavbar: DateFormatter = {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "ha"
+    return dateFormatter
+}()
+
+
 struct ForecastWeather {
     var forecastIcon: String
     var forecastTime: String
     var forecastSummary: String
     var forecastHigh: Int
     var forecastLow: Int
+    var navbarTime: String
+    var hourlyTemp: Int
+    var hourlyIcon: String
 }
 
 
@@ -50,6 +60,7 @@ class WeatherDetail: WeatherLocation {
     private struct Weather: Codable {
         var description: String
         var icon: String
+        var id: Int
     }
     
     private struct City: Codable {
@@ -142,18 +153,41 @@ class WeatherDetail: WeatherLocation {
             do {
                 let forecastResult = try JSONDecoder().decode(ForecastResult.self, from: data!)
                 
-                for index in 0..<forecastResult.list.count {
-                    let forecastIcon = self.fileNameForIcon(icon:(forecastResult.list[index].weather[0].icon))
-                    let forecastSummary = forecastResult.list[index].weather[0].description
-                    let forecastHigh = Int(forecastResult.list[index].main.temp_max.rounded())
-                    let forecastLow = Int(forecastResult.list[index].main.temp_min.rounded())
-                    let time = Date(timeIntervalSince1970: forecastResult.list[index].dt)
-                    dateFormatter.timeZone = TimeZone(secondsFromGMT: forecastResult.city.timezone)
-                    let forecastTime = dateFormatter.string(from: time)
-                    let forecastWeather = ForecastWeather(forecastIcon: forecastIcon, forecastTime: forecastTime, forecastSummary: forecastSummary, forecastHigh: forecastHigh, forecastLow: forecastLow)
-                    self.forecastWeatherData.append(forecastWeather)
-                    print("Time: \(forecastTime), High: \(forecastHigh), Low: \(forecastLow)")
+                
+                // limit the data length
+                let lastData = min(20, forecastResult.list.count)
+                
+                if lastData > 0 {
+                    // use loop to get data of differrent time from json
+                    for index in 1...lastData {
+                        
+                        // set forecast weather data
+                        let forecastIcon = self.fileNameForIcon(icon:(forecastResult.list[index].weather[0].icon))
+                        let forecastSummary = forecastResult.list[index].weather[0].description
+                        let forecastHigh = Int(forecastResult.list[index].main.temp_max.rounded())
+                        let forecastLow = Int(forecastResult.list[index].main.temp_min.rounded())
+                        
+                        // use dateFormatter to change date display state
+                        let time = Date(timeIntervalSince1970: forecastResult.list[index].dt)
+                        dateFormatter.timeZone = TimeZone(secondsFromGMT: forecastResult.city.timezone)
+                        let forecastTime = dateFormatter.string(from: time)
+                        
+                        // use dateFormatterForNavbar to change date display state for navbar
+                        dateFormatterForNavbar.timeZone = TimeZone(secondsFromGMT: forecastResult.city.timezone)
+                        let navbarTime = dateFormatterForNavbar.string(from: time)
+                        
+                        // set forecastTemp
+                        let hourlyTemp = Int(forecastResult.list[index].main.temp.rounded())
+                        
+                        // set hourly icon
+                        let hourlyIcon = self.systemNameFromId(id: (forecastResult.list[index].weather[0].id), icon: (forecastResult.list[index].weather[0].icon))
+                        
+                        let forecastWeather = ForecastWeather(forecastIcon: forecastIcon, forecastTime: forecastTime, forecastSummary: forecastSummary, forecastHigh: forecastHigh, forecastLow: forecastLow, navbarTime: navbarTime, hourlyTemp: hourlyTemp, hourlyIcon: hourlyIcon)
+                        self.forecastWeatherData.append(forecastWeather)
+                        print("Time: \(forecastTime), High: \(forecastHigh), Low: \(forecastLow)")
+                    }
                 }
+                
 
 
             } catch {
@@ -168,7 +202,7 @@ class WeatherDetail: WeatherLocation {
     
     private func fileNameForIcon(icon: String) -> String {
         var fileName = ""
-        switch(icon) {
+        switch icon {
         case "01d":
             fileName = "clear-day"
         case "01n":
@@ -192,5 +226,41 @@ class WeatherDetail: WeatherLocation {
         }
         
         return fileName
+    }
+    
+    
+    private func systemNameFromId(id: Int, icon: String) -> String {
+        switch id {
+        case 200...299:
+            return "cloud.bolt.rain"
+        case 300...399:
+            return "cloud.drizzle"
+        case 500, 501, 520, 521, 531:
+            return "cloud.rain"
+        case 502, 503, 504, 522:
+            return "cloud.heavyrain"
+        case 511, 611...616:
+            return "sleet"
+        case 600...602, 620...622:
+            return "snow"
+        case 701, 711, 741:
+            return "fog"
+        case 721:
+            return (icon.hasSuffix("d") ? "sun.haze" : "cloud.fog")
+        case 731, 751, 761, 762:
+            return (icon.hasSuffix("d") ? "sun.dust" : "cloud.fog")
+        case 771:
+            return "wind"
+        case 781:
+            return "tornado"
+        case 800:
+            return (icon.hasSuffix("d") ? "sun.max" : "moon")
+        case 801, 802:
+            return (icon.hasSuffix("d") ? "cloud.sun" : "cloud.moon")
+        case 803, 804:
+            return "cloud"
+        default:
+            return "questionmark.diamond"
+        }
     }
 }
